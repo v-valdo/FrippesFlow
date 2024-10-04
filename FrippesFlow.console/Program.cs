@@ -28,7 +28,7 @@ decimal intaktTotalt = bullar * intaktPerBulle;
 
 decimal marginal = intaktTotalt - produktionsKostnadTotalt;
 
-Console.WriteLine($"\nv 1: {bullar:N0} bullar");
+Console.WriteLine($"\n{datum.ToString("yyyy-MM-dd")}: {bullar:N0} bullar");
 Console.WriteLine($"Ingredienskostnader: {ingrediensKostnadTotalt:N0}:-");
 Console.WriteLine($"Personalkostnad: {personalKostnadTotalt:N0}:-");
 Console.WriteLine($"El och utrustning: {elUtrustningTotalt:N0}:-");
