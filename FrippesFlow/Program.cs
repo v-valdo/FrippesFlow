@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FrippesFlowContext>(options =>
- options.UseSqlite(builder.Configuration.GetConnectionString ("Sqllite")));
+ options.UseSqlite(builder.Configuration.GetConnectionString("Sqllite")));
 
 builder.Services.AddControllersWithViews();
 
