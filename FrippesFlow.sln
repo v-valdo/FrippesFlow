@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrippesFlow", "FrippesFlow\FrippesFlow.csproj", "{73F30C35-A9DC-43C4-BF21-AAEA2AE4D535}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frippeCalc", "FrippesFlow.console\frippeCalc.csproj", "{7950D784-D275-45FC-850C-7ABDA449328E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73F30C35-A9DC-43C4-BF21-AAEA2AE4D535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73F30C35-A9DC-43C4-BF21-AAEA2AE4D535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73F30C35-A9DC-43C4-BF21-AAEA2AE4D535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73F30C35-A9DC-43C4-BF21-AAEA2AE4D535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7950D784-D275-45FC-850C-7ABDA449328E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7950D784-D275-45FC-850C-7ABDA449328E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7950D784-D275-45FC-850C-7ABDA449328E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7950D784-D275-45FC-850C-7ABDA449328E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
