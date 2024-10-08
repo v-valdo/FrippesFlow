@@ -7,6 +7,5 @@ namespace FrippesFlow.Controllers
         {
             return View();
         }
-
     }
 }
