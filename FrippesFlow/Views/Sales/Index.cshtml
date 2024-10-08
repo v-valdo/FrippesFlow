@@ -1,30 +1,354 @@
 <h1>Sales Overview</h1>
 <button>Add Weekly Sales</button>
 <div>
-    <canvas id="myChart"></canvas>
+    <canvas id="bread-chart"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <script>
-    const ctx = document.getElementById('myChart');
+    Chart.register(ChartZoom);
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+    class ChartGenerator {
+        constructor(
+            canvasId,
+            chartType,
+            costDatasets = [],
+            revenueDatasets = [],
+            xAxisLabel = 'Dag',
+            yAxisLabel = 'Pris (kr)'
+        ) {
+            this.canvasId = canvasId;
+            this.chartType = chartType;
+
+            this.costDatasets = costDatasets;
+            this.revenueDatasets = revenueDatasets;
+            this.combinedPricesData = this.getCombinedPricesData();
+            this.colorScheme = this.getColorScheme(
+                costDatasets.length + revenueDatasets.length
+            );
+
+            this.xAxisLabel = xAxisLabel;
+            this.yAxisLabel = yAxisLabel;
+            this.chartInstance = null;
+            this.pieChartInstance = null;
         }
-    });
+
+        getCombinedPricesData() {
+            const days = [...Array(30)].map((_, dayIndex) => `${dayIndex + 1}`);
+
+            const combinedData = {
+                days,
+                prices: {},
+            };
+
+            this.costDatasets.forEach((dataset) => {
+                combinedData.prices[dataset.type] = dataset.prices;
+            });
+
+            this.revenueDatasets.forEach((dataset) => {
+                combinedData.prices[dataset.type] = dataset.profits;
+            });
+
+            return combinedData;
+        }
+
+        randomColorValue = () => {
+            return Math.floor(Math.random() * 256);
+        };
+
+        getColorScheme(amountOfColors) {
+            const colors = [];
+
+            for (let colorIndex = 0; colorIndex < amountOfColors; colorIndex++) {
+                const red = this.randomColorValue();
+                const green = this.randomColorValue();
+                const blue = this.randomColorValue();
+                const alpha = 1;
+                const color = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+                colors.push(color);
+            }
+            return colors;
+        }
+
+        processDataSets(data, colors) {
+            return Object.keys(data).map((key, index) => ({
+                label: key,
+                data: data[key],
+                borderColor: colors[index % colors.length],
+                borderWidth: 1,
+                fill: false,
+                pointRadius: 5,
+                pointBackgroundColor: colors[index % colors.length],
+            }));
+        }
+
+        getCanvas = (canvasId) => {
+            const canvas =
+                document.getElementById(canvasId) || document.createElement('canvas');
+            return canvas;
+        };
+
+        generateChart() {
+            const lineChartCanvas = this.getCanvas(this.canvasId)?.getContext('2d');
+
+            const processedDatasets = this.processDataSets(
+                this.combinedPricesData.prices,
+                this.colorScheme
+            );
+            const labels = this.combinedPricesData.days;
+
+            this.chartInstance = new Chart(lineChartCanvas, {
+                type: this.chartType,
+                data: {
+                    labels,
+                    datasets: processedDatasets,
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: (tooltipItems) => {
+                                    const index = tooltipItems[0].dataIndex;
+                                    return `${this.xAxisLabel} ${labels[index]}`;
+                                },
+                                label: (tooltipItem) => {
+                                    const price = tooltipItem.raw;
+                                    const datasetLabel = tooltipItem.dataset.label;
+                                    return `${datasetLabel}: ${price} kr`;
+                                },
+                            },
+                        },
+                        zoom: {
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                },
+                                pinch: {
+                                    enabled: true,
+                                },
+                                mode: 'x',
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: this.xAxisLabel,
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: this.yAxisLabel,
+                            },
+                        },
+                    },
+                },
+            });
+
+            lineChartCanvas.canvas.addEventListener('click', (event) => {
+                const activePoints = this.chartInstance.getElementsAtEventForMode(
+                    event,
+                    'nearest',
+                    { intersect: true },
+                    false
+                );
+
+                if (activePoints.length) {
+                    const clickedIndex = activePoints[0].index;
+                    this.updatePieChart(clickedIndex);
+
+                    const pieChartCanvas = document.getElementById('pie-chart');
+                    if (pieChartCanvas && pieChartCanvas.style.display === 'none') {
+                        pieChartCanvas.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        updatePieChart(dayIndex) {
+            const pieChartId = 'pie-chart';
+            const pieChartCanvas = this.getCanvas(pieChartId);
+
+            if (!document.getElementById(pieChartId)) {
+                pieChartCanvas.id = pieChartId;
+                pieChartCanvas.style.display = 'block';
+                document.body.appendChild(pieChartCanvas);
+            }
+
+            const pieChartContext = pieChartCanvas.getContext('2d');
+
+            const labels = [
+                ...this.costDatasets.map((dataset) => dataset.type),
+                ...this.revenueDatasets.map((dataset) => dataset.type),
+            ];
+            const data = [
+                ...this.costDatasets.map((dataset) => dataset.prices[dayIndex]),
+                ...this.revenueDatasets.map((dataset) => dataset.profits[dayIndex]),
+            ];
+
+            if (this.pieChartInstance) {
+                this.pieChartInstance.data.labels = labels;
+                this.pieChartInstance.data.datasets[0].data = data;
+                this.pieChartInstance.options.plugins.title.text = `${this.yAxisLabel
+                    } för dag ${dayIndex + 1}`;
+
+                this.pieChartInstance.update();
+                return;
+            }
+
+            this.pieChartInstance = new Chart(pieChartContext, {
+                type: 'pie',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: `${this.yAxisLabel}`,
+                            data,
+                            backgroundColor: this.colorScheme,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (tooltipItem) => {
+                                    const datasetLabel = tooltipItem.label;
+                                    const price = tooltipItem.raw;
+                                    return `${datasetLabel}: ${price} kr`;
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            pieChartCanvas.addEventListener('click', () => {
+                pieChartCanvas.style.display = 'none';
+            });
+        }
+    }
+
+    const costDatasets = [
+        {
+            type: 'Mjöl',
+            prices: [
+                25, 24, 26, 27, 24, 30, 28, 25, 27, 29, 26, 25, 24, 23, 26, 27, 28, 29,
+                25, 26, 24, 27, 28, 26, 25, 24, 23, 25, 24, 25,
+            ],
+        },
+        {
+            type: 'Jäst',
+            prices: [
+                10, 11, 10, 12, 10, 11, 9, 10, 12, 11, 10, 9, 8, 10, 11, 12, 11, 10, 9, 8,
+                10, 11, 12, 11, 10, 9, 10, 11, 10, 9,
+            ],
+        },
+        {
+            type: 'Salt',
+            prices: [
+                5, 5, 4, 5, 6, 5, 5, 4, 5, 5, 6, 5, 4, 5, 5, 4, 5, 6, 5, 4, 5, 5, 4, 5, 6,
+                5, 4, 5, 5, 4,
+            ],
+        },
+        {
+            type: 'Vatten använt i bakning',
+            prices: [
+                1, 1, 2, 1, 3, 1, 1, 2, 1, 1, 1, 2, 1, 1, 4, 2, 1, 1, 1, 2, 1, 1, 1, 2, 4,
+                1, 3, 2, 1, 1,
+            ],
+        },
+        {
+            type: 'Socker',
+            prices: [
+                7, 6, 7, 8, 6, 7, 8, 7, 6, 8, 7, 6, 7, 8, 6, 7, 8, 7, 6, 8, 7, 6, 8, 7, 6,
+                7, 8, 6, 7, 8,
+            ],
+        },
+        {
+            type: 'Smör',
+            prices: [
+                18, 19, 20, 18, 17, 18, 19, 20, 18, 19, 20, 21, 19, 18, 20, 19, 18, 20,
+                21, 20, 19, 18, 19, 20, 18, 19, 20, 21, 19, 18,
+            ],
+            type: 'Elektricitet',
+            prices: [
+                30, 31, 29, 30, 32, 30, 31, 29, 30, 31, 29, 30, 32, 30, 29, 31, 30, 29,
+                30, 31, 29, 30, 32, 31, 30, 29, 30, 31, 32, 30,
+            ],
+        },
+        {
+            type: 'Övrigt vatten',
+            prices: [
+                15, 14, 15, 14, 15, 16, 14, 15, 14, 15, 16, 15, 14, 15, 14, 15, 16, 14,
+                15, 14, 15, 16, 15, 14, 15, 16, 15, 14, 15, 14,
+            ],
+        },
+    ];
+
+    const revenueDatasets = [
+        {
+            type: 'Intäkter',
+            profits: [
+                152, 181, 112, 116, 110, 110, 211, 111, 110, 87, 81, 80, 80, 110, 111,
+                219, 196, 171, 110, 111, 111, 214, 111, 111, 110, 85, 82, 111, 88, 215,
+            ],
+        },
+    ];
+
+    const chartGenerator = new ChartGenerator(
+        'bread-chart',
+        'line',
+        costDatasets,
+        revenueDatasets
+    );
+
+    function sumDatasetValues(dataset, key) {
+        const reducedDatasets = dataset.reduce((total, currentDataset) => {
+            if (currentDataset[key]) {
+                return (
+                    total +
+                    currentDataset[key].reduce((accoumulated, value) => {
+                        return accoumulated + value;
+                    }, 0)
+                );
+            }
+            return total;
+        }, 0);
+        return reducedDatasets;
+    }
+
+    const profitMargin = document.createElement('p');
+    const profitMarginPercentage =
+        ((sumDatasetValues(revenueDatasets, 'profits') -
+            sumDatasetValues(costDatasets, 'prices')) /
+            sumDatasetValues(revenueDatasets, 'profits')) *
+        100;
+    profitMargin.innerText = 'Vinstmarginal: ' + profitMarginPercentage + '%';
+
+    if (profitMarginPercentage > 25) {
+        profitMargin.style.color = 'green';
+    } else if (profitMarginPercentage > 20) {
+        profitMargin.style.color = 'yellow';
+    } else {
+        profitMargin.style.color = 'red';
+    }
+    document.body.appendChild(profitMargin);
+
+    chartGenerator.generateChart();
+
 </script>
