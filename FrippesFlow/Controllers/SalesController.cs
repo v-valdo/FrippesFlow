@@ -29,6 +29,7 @@ namespace FrippesFlow.Controllers
     return View(sales);
         }
 
+
         //Read Monthly expense
 
         //Read Production costs
@@ -36,7 +37,6 @@ namespace FrippesFlow.Controllers
         //Read IngredientPer10k
 
         //Create sales per week => SalesEntry
-        
 
     }
 }
