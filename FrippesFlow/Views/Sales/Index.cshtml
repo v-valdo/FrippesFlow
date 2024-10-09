@@ -10,13 +10,15 @@
     // Hämta data från ViewBag (som JSON)
     const weeks = @Html.Raw(ViewBag.Weeks);
     const amountsSold = @Html.Raw(ViewBag.AmountsSold);
+    const pricePer = @Html.Raw(ViewBag.PricePer);
+
 
     const ctx = document.getElementById('myChart');
 
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: weeks,  // Använd veckorna som etiketter
+            labels: weeks, // Använd veckorna som etiketter
             datasets: [{
                 label: 'Amount Sold',
                 data: amountsSold,  // Använd försäljningssiffrorna som data
