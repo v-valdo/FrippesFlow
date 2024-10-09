@@ -1,0 +1,21 @@
+@model FrippesFlow.Models.SalesEntry;
+<section>
+    <form asp-action="AddEntry">
+        <div>
+            <div>
+                <label for="Week">Week</label>
+                <input asp-for="Week" type="text">
+            </div>
+            <div>
+                <label for="AmountSold">Amount Sold</label>
+                <input asp-for="AmountSold" type="text">
+            </div>
+            <div>
+                <label for="PricePer">Price per fralla</label>
+                <input asp-for="PricePer" type="text">
+            </div>
+        </div>
+        <button>Save</button>
+    </form>
+
+</section>

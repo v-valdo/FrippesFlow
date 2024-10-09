@@ -8,6 +8,7 @@ builder.Services.AddDbContext<FrippesFlowContext>(options =>
  options.UseSqlite(builder.Configuration.GetConnectionString("Sqllite")));
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
