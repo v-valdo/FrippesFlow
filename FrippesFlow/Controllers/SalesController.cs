@@ -1,5 +1,6 @@
 using FrippesFlow.data;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 namespace FrippesFlow.Controllers
 {
 
@@ -16,9 +17,16 @@ namespace FrippesFlow.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-           var sales = _context.SalesEntries.ToList();
+ var sales = _context.SalesEntries.ToList();
 
-            return View();
+    // Förbered data för Chart.js
+    var weeks = sales.Select(s => s.Week).ToList();  // Hämta veckor som etiketter
+    var amountsSold = sales.Select(s => s.AmountSold).ToList();  // Hämta antal sålda produkter
+
+    ViewBag.Weeks = JsonConvert.SerializeObject(weeks);  // Skicka veckor som JSON
+    ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);  // Skicka antal sålda som JSON
+
+    return View(sales);
         }
 
         //Read Monthly expense

@@ -7,16 +7,22 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // Hämta data från ViewBag (som JSON)
+    const weeks = @Html.Raw(ViewBag.Weeks);
+    const amountsSold = @Html.Raw(ViewBag.AmountsSold);
+
     const ctx = document.getElementById('myChart');
 
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: weeks,  // Använd veckorna som etiketter
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
+                label: 'Amount Sold',
+                data: amountsSold,  // Använd försäljningssiffrorna som data
+                borderWidth: 1,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)'
             }]
         },
         options: {
