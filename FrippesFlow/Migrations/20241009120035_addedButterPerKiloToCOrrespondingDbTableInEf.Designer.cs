@@ -2,6 +2,7 @@
 using FrippesFlow.data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FrippesFlow.Migrations
 {
     [DbContext(typeof(FrippesFlowContext))]
-    partial class FrippesFlowContextModelSnapshot : ModelSnapshot
+    [Migration("20241009120035_addedButterPerKiloToCOrrespondingDbTableInEf")]
+    partial class addedButterPerKiloToCOrrespondingDbTableInEf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");

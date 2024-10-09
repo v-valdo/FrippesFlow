@@ -13,5 +13,6 @@ namespace FrippesFlow.Models
         public double YeastPerKg { get; set; }
         public double SaltPerKg { get; set; }
         public double WaterPerM3 { get; set; }
+        public double ButterPerKg { get; set; }
     }
 }

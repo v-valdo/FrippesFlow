@@ -10,23 +10,23 @@ namespace FrippesFlow.Controllers
         private readonly FrippesFlowContext _context;
         public SalesController(FrippesFlowContext context)
         {
-          _context = context;
+            _context = context;
         }
-       
-       //Read Result
+
+        //Read Result
         [HttpGet]
         public ActionResult Index()
         {
- var sales = _context.SalesEntries.ToList();
+            var sales = _context.SalesEntries.ToList();
 
-    // Förbered data för Chart.js
-    var weeks = sales.Select(s => s.Week).ToList();  // Hämta veckor som etiketter
-    var amountsSold = sales.Select(s => s.AmountSold).ToList();  // Hämta antal sålda produkter
+            // Förbered data för Chart.js
+            var weeks = sales.Select(s => s.Week).ToList();  // Hämta veckor som etiketter
+            var amountsSold = sales.Select(s => s.AmountSold).ToList();  // Hämta antal sålda produkter
 
-    ViewBag.Weeks = JsonConvert.SerializeObject(weeks);  // Skicka veckor som JSON
-    ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);  // Skicka antal sålda som JSON
+            ViewBag.Weeks = JsonConvert.SerializeObject(weeks);  // Skicka veckor som JSON
+            ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);  // Skicka antal sålda som JSON
 
-    return View(sales);
+            return View(sales);
         }
 
 
