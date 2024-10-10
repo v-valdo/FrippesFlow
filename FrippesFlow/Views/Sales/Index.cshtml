@@ -19,7 +19,7 @@
 
     class ChartGenerator {
         constructor(context, chartType, datasets, dataUnit, xAxisUnit = 'dag') {
-            this.context = context;
+            this.canvas = context;
             this.chartType = chartType;
             this.datasets = datasets;
             this.chart = null;
@@ -45,7 +45,7 @@
                 })),
             };
 
-            this.chartInstance = new Chart(this.context, {
+            this.chartInstance = new Chart(this.canvas.getContext('2d'), {
                 type: this.chartType,
                 data: chartData,
                 options: {
@@ -88,9 +88,6 @@
                                 autoSkip: false,
                                 minRotation: 25,
                                 maxRotation: 45,
-                                callback: function (index) {
-                                    return this.getLabelForValue(index);
-                                }
                             },
                         },
                         y: {
@@ -103,29 +100,38 @@
                     },
                 },
             });
-            this.context.canvas.addEventListener('click', (event) => {
-                const activePoints = this.chartInstance.getElementsAtEventForMode(
-                    event,
-                    'nearest',
-                    { intersect: true },
-                    false
-                );
 
-                if (activePoints.length) {
-                    const pieChartId = 'pie-chart';
-                    const existingCanvas = document.getElementById(pieChartId);
-                    if (existingCanvas) {
-                        existingCanvas.parentNode.removeChild(existingCanvas);
+            this.addChartClickListener();
+        }
+
+        addChartClickListener() {
+            if (this.canvas) {
+                this.canvas.addEventListener('click', (event) => {
+                    const activePoints = this.chartInstance.getElementsAtEventForMode(
+                        event,
+                        'nearest',
+                        { intersect: true },
+                        false
+                    );
+
+                    if (activePoints.length) {
+                        const pieChartId = 'pie-chart';
+                        const existingCanvas = document.getElementById(pieChartId);
+                        if (existingCanvas) {
+                            existingCanvas.parentNode.removeChild(existingCanvas);
+                        }
+
+                        const pieChartCanvas = document.createElement('canvas');
+                        pieChartCanvas.id = pieChartId;
+                        document.body.appendChild(pieChartCanvas);
+
+                        const clickedIndex = activePoints[0].index;
+                        this.updatePieChart(clickedIndex, pieChartCanvas);
                     }
-
-                    const pieChartCanvas = document.createElement('canvas');
-                    pieChartCanvas.id = pieChartId;
-                    document.body.appendChild(pieChartCanvas);
-
-                    const clickedIndex = activePoints[0].index;
-                    this.updatePieChart(clickedIndex, pieChartCanvas);
-                }
-            });
+                });
+            } else {
+                console.error('Canvas element is not available.');
+            }
         }
 
         updatePieChart(dayIndex, pieChartCanvas) {
@@ -169,11 +175,11 @@
 
             pieChartCanvas.addEventListener(
                 'contextmenu',
-                function (event) {
+                (event) => {
                     event.preventDefault();
                     pieChartCanvas.parentNode.removeChild(pieChartCanvas);
                     this.pieChartInstance.destroy();
-                }.bind(this)
+                }
             );
         }
 
@@ -185,14 +191,14 @@
             let colors = [];
             for (let colorIndex = 0; colorIndex < numberOfColors; colorIndex++) {
                 const randomColor = `rgba(${this.randomColorValue()},
-        ${this.randomColorValue()},
-        ${this.randomColorValue()},
-        ${alpha})`;
+    ${this.randomColorValue()},
+    ${this.randomColorValue()},
+    ${alpha})`;
                 colors.push(randomColor);
             }
             return colors;
         }
-    } console.log(weeks)
+    }
 
     const datasets = [
         {
@@ -205,5 +211,5 @@
     ];
 
     const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'Amount sold', "Weeks");
-    chartGenerator.generateChart();  
+    chartGenerator.generateChart(); 
 </script>
