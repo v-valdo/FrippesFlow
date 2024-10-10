@@ -1,5 +1,13 @@
 <h1>Sales Overview</h1>
-<button>Add Weekly Sales</button>
+
+<button id="addSalesButton" class="float-left submit-button">Add Weekly Sales</button>
+
+<script type="text/javascript">
+    document.getElementById("addSalesButton").onclick = function () {
+        location.href = "http://localhost:5012/sales/add";
+    };
+</script>
+
 <div>
     <canvas id="myChart"></canvas>
 </div>
