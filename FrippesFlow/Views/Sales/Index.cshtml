@@ -3,10 +3,11 @@
 <div>
     <canvas id="myChart"></canvas>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <script>
+
+
     // Hämta data från ViewBag (som JSON)
     const weeks = @Html.Raw(ViewBag.Weeks);
     const amountsSold = @Html.Raw(ViewBag.AmountsSold);
@@ -14,25 +15,195 @@
 
 
     const ctx = document.getElementById('myChart');
+    Chart.register(ChartZoom);
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: weeks, // Använd veckorna som etiketter
-            datasets: [{
-                label: 'Amount Sold',
-                data: amountsSold,  // Använd försäljningssiffrorna som data
-                borderWidth: 1,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)'
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+    class ChartGenerator {
+        constructor(context, chartType, datasets, dataUnit, xAxisUnit = 'dag') {
+            this.context = context;
+            this.chartType = chartType;
+            this.datasets = datasets;
+            this.chart = null;
+            this.dataUnit = dataUnit;
+            this.xAxisUnit = xAxisUnit;
+            this.pieChartInstance = null;
+            this.randomColors = this.getRandomColors(datasets[0].data.length);
         }
-    });
+
+        generateChart() {
+            const chartData = {
+                labels: weeks.slice(1),
+                datasets: this.datasets.map((dataset, index) => ({
+                    label: dataset.label,
+                    data: dataset.data,
+                    borderColor: this.randomColors[index],
+                    borderWidth: 0.5,
+                    pointRadius: 1,
+                    pointHoverRadius: 3,
+                    lineTension: 0.0001,
+                    backgroundColor: this.randomColors[index],
+                    fill: false,
+                })),
+            };
+
+            this.chartInstance = new Chart(this.context, {
+                type: this.chartType,
+                data: chartData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: () => '',
+                                label: (tooltipItem) => {
+                                    const datasetLabel = tooltipItem.dataset.label || '';
+                                    const dataInDataPoint = tooltipItem.raw;
+                                    return `${datasetLabel}: ${dataInDataPoint} ${this.dataUnit}`;
+                                },
+                            },
+                        },
+                        zoom: {
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                },
+                                pinch: {
+                                    enabled: true,
+                                },
+                                mode: 'y',
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: this.xAxisUnit,
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                minRotation: 25,
+                                maxRotation: 45,
+                                callback: function (value, index) {
+                                    return this.getLabelForValue(index);
+                                }
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: this.dataUnit,
+                            },
+                        },
+                    },
+                },
+            });
+            this.context.canvas.addEventListener('click', (event) => {
+                const activePoints = this.chartInstance.getElementsAtEventForMode(
+                    event,
+                    'nearest',
+                    { intersect: true },
+                    false
+                );
+
+                if (activePoints.length) {
+                    const pieChartId = 'pie-chart';
+                    const existingCanvas = document.getElementById(pieChartId);
+                    if (existingCanvas) {
+                        existingCanvas.parentNode.removeChild(existingCanvas);
+                    }
+
+                    const pieChartCanvas = document.createElement('canvas');
+                    pieChartCanvas.id = pieChartId;
+                    document.body.appendChild(pieChartCanvas);
+
+                    const clickedIndex = activePoints[0].index;
+                    this.updatePieChart(clickedIndex, pieChartCanvas);
+                }
+            });
+        }
+
+        updatePieChart(dayIndex, pieChartCanvas) {
+            const color = this.randomColors;
+            const data = this.datasets.map((dataset) => dataset.data[dayIndex]);
+
+            const pieChartData = {
+                labels: this.datasets.map((dataset) => dataset.label),
+                datasets: [
+                    {
+                        data: data,
+                        backgroundColor: color,
+                        borderWidth: 0,
+                    },
+                ],
+            };
+
+            const pieChartContext = pieChartCanvas.getContext('2d');
+            this.pieChartInstance = new Chart(pieChartContext, {
+                type: 'pie',
+                data: pieChartData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `${this.dataUnit} för dag ${dayIndex + 1}`,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (tooltipItem) => {
+                                    const datasetLabel = tooltipItem.label;
+                                    const price = tooltipItem.raw;
+                                    return `${datasetLabel}: ${price} ${this.dataUnit}`;
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            pieChartCanvas.addEventListener(
+                'contextmenu',
+                function (event) {
+                    event.preventDefault();
+                    pieChartCanvas.parentNode.removeChild(pieChartCanvas);
+                    this.pieChartInstance.destroy();
+                }.bind(this)
+            );
+        }
+
+        randomColorValue = (min = 120, max = 210) => {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        getRandomColors(numberOfColors, alpha = 1) {
+            let colors = [];
+            for (let colorIndex = 0; colorIndex < numberOfColors; colorIndex++) {
+                const randomColor = `rgba(${this.randomColorValue()},
+        ${this.randomColorValue()},
+        ${this.randomColorValue()},
+        ${alpha})`;
+                colors.push(randomColor);
+            }
+            return colors;
+        }
+    } console.log(weeks)
+
+    const datasets = [
+        {
+            label: 'Amounts sold',
+            data: amountsSold
+        }, {
+            label: 'Price per',
+            data: pricePer
+        },
+    ];
+
+    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'Amount sold', "Weeks");
+    chartGenerator.generateChart();  
 </script>
