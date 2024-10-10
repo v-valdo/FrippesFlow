@@ -29,10 +29,17 @@
             labels: weeks, // Använd veckorna som etiketter
             datasets: [{
                 label: 'Amount Sold',
-                data: amountsSold,  // Använd försäljningssiffrorna som data
+                data: amountsSold, // Använd försäljningssiffrorna som data
                 borderWidth: 1,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 backgroundColor: 'rgba(75, 192, 192, 0.2)'
+            },
+            {
+                label: 'Price per fralla',
+                data: pricePer,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 20, 10, 1)',
+                backgroundColor: 'rgba(255, 20, 10, 0.2)'
             }]
         },
         options: {
