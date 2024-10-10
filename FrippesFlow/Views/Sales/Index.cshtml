@@ -10,113 +10,46 @@
     Chart.register(ChartZoom);
 
     class ChartGenerator {
-        constructor(
-            canvasId,
-            chartType,
-            costDatasets = [],
-            revenueDatasets = [],
-            xAxisLabel = 'Dag',
-            yAxisLabel = 'Pris (kr)'
-        ) {
-            this.canvasId = canvasId;
+        constructor(context, chartType, datasets, dataUnit, xAxisUnit = 'dag') {
+            this.context = context;
             this.chartType = chartType;
-
-            this.costDatasets = costDatasets;
-            this.revenueDatasets = revenueDatasets;
-            this.combinedPricesData = this.getCombinedPricesData();
-            this.colorScheme = this.getColorScheme(
-                costDatasets.length + revenueDatasets.length
-            );
-
-            this.xAxisLabel = xAxisLabel;
-            this.yAxisLabel = yAxisLabel;
-            this.chartInstance = null;
+            this.datasets = datasets;
+            this.chart = null;
+            this.dataUnit = dataUnit;
+            this.xAxisUnit = xAxisUnit;
             this.pieChartInstance = null;
+            this.randomColors = this.getRandomColors(datasets[0].data.length);
         }
-
-        getCombinedPricesData() {
-            const days = [...Array(30)].map((_, dayIndex) => `${dayIndex + 1}`);
-
-            const combinedData = {
-                days,
-                prices: {},
-            };
-
-            this.costDatasets.forEach((dataset) => {
-                combinedData.prices[dataset.type] = dataset.prices;
-            });
-
-            this.revenueDatasets.forEach((dataset) => {
-                combinedData.prices[dataset.type] = dataset.profits;
-            });
-
-            return combinedData;
-        }
-
-        randomColorValue = () => {
-            return Math.floor(Math.random() * 256);
-        };
-
-        getColorScheme(amountOfColors) {
-            const colors = [];
-
-            for (let colorIndex = 0; colorIndex < amountOfColors; colorIndex++) {
-                const red = this.randomColorValue();
-                const green = this.randomColorValue();
-                const blue = this.randomColorValue();
-                const alpha = 1;
-                const color = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
-                colors.push(color);
-            }
-            return colors;
-        }
-
-        processDataSets(data, colors) {
-            return Object.keys(data).map((key, index) => ({
-                label: key,
-                data: data[key],
-                borderColor: colors[index % colors.length],
-                borderWidth: 1,
-                fill: false,
-                pointRadius: 5,
-                pointBackgroundColor: colors[index % colors.length],
-            }));
-        }
-
-        getCanvas = (canvasId) => {
-            const canvas =
-                document.getElementById(canvasId) || document.createElement('canvas');
-            return canvas;
-        };
 
         generateChart() {
-            const lineChartCanvas = this.getCanvas(this.canvasId)?.getContext('2d');
+            const chartData = {
+                labels: this.datasets[1].data.map((_, index) => index + 1),
+                datasets: this.datasets.map((dataset, index) => ({
+                    label: dataset.label,
+                    data: dataset.data,
+                    borderColor: this.randomColors[index],
+                    borderWidth: 0.5,
+                    pointRadius: 1,
+                    pointHoverRadius: 3,
+                    lineTension: 0.0001,
+                    backgroundColor: this.randomColors[index],
+                    fill: false,
+                })),
+            };
 
-            const processedDatasets = this.processDataSets(
-                this.combinedPricesData.prices,
-                this.colorScheme
-            );
-            const labels = this.combinedPricesData.days;
-
-            this.chartInstance = new Chart(lineChartCanvas, {
+            this.chartInstance = new Chart(this.context, {
                 type: this.chartType,
-                data: {
-                    labels,
-                    datasets: processedDatasets,
-                },
+                data: chartData,
                 options: {
                     responsive: true,
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                title: (tooltipItems) => {
-                                    const index = tooltipItems[0].dataIndex;
-                                    return `${this.xAxisLabel} ${labels[index]}`;
-                                },
+                                title: () => '',
                                 label: (tooltipItem) => {
-                                    const price = tooltipItem.raw;
-                                    const datasetLabel = tooltipItem.dataset.label;
-                                    return `${datasetLabel}: ${price} kr`;
+                                    const datasetLabel = tooltipItem.dataset.label || '';
+                                    const dataInDataPoint = tooltipItem.raw;
+                                    return `${datasetLabel}: ${dataInDataPoint} ${this.dataUnit}`;
                                 },
                             },
                         },
@@ -128,7 +61,7 @@
                                 pinch: {
                                     enabled: true,
                                 },
-                                mode: 'x',
+                                mode: 'y',
                             },
                             pan: {
                                 enabled: true,
@@ -141,21 +74,23 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: this.xAxisLabel,
+                                text: this.xAxisUnit,
+                            },
+                            ticks: {
+                                maxTicksLimit: 10,
                             },
                         },
                         y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: this.yAxisLabel,
+                                text: this.dataUnit,
                             },
                         },
                     },
                 },
             });
-
-            lineChartCanvas.canvas.addEventListener('click', (event) => {
+            this.context.canvas.addEventListener('click', (event) => {
                 const activePoints = this.chartInstance.getElementsAtEventForMode(
                     event,
                     'nearest',
@@ -164,72 +99,54 @@
                 );
 
                 if (activePoints.length) {
-                    const clickedIndex = activePoints[0].index;
-                    this.updatePieChart(clickedIndex);
-
-                    const pieChartCanvas = document.getElementById('pie-chart');
-                    if (pieChartCanvas && pieChartCanvas.style.display === 'none') {
-                        pieChartCanvas.style.display = 'block';
+                    const pieChartId = 'pie-chart';
+                    const existingCanvas = document.getElementById(pieChartId);
+                    if (existingCanvas) {
+                        existingCanvas.parentNode.removeChild(existingCanvas);
                     }
+
+                    const pieChartCanvas = document.createElement('canvas');
+                    pieChartCanvas.id = pieChartId;
+                    document.body.appendChild(pieChartCanvas);
+
+                    const clickedIndex = activePoints[0].index;
+                    this.updatePieChart(clickedIndex, pieChartCanvas);
                 }
             });
         }
 
-        updatePieChart(dayIndex) {
-            const pieChartId = 'pie-chart';
-            const pieChartCanvas = this.getCanvas(pieChartId);
+        updatePieChart(dayIndex, pieChartCanvas) {
+            const color = this.randomColors;
+            const data = this.datasets.map((dataset) => dataset.data[dayIndex]);
 
-            if (!document.getElementById(pieChartId)) {
-                pieChartCanvas.id = pieChartId;
-                pieChartCanvas.style.display = 'block';
-                document.body.appendChild(pieChartCanvas);
-            }
+            const pieChartData = {
+                labels: this.datasets.map((dataset) => dataset.label),
+                datasets: [
+                    {
+                        data: data,
+                        backgroundColor: color,
+                        borderWidth: 0,
+                    },
+                ],
+            };
 
             const pieChartContext = pieChartCanvas.getContext('2d');
-
-            const labels = [
-                ...this.costDatasets.map((dataset) => dataset.type),
-                ...this.revenueDatasets.map((dataset) => dataset.type),
-            ];
-            const data = [
-                ...this.costDatasets.map((dataset) => dataset.prices[dayIndex]),
-                ...this.revenueDatasets.map((dataset) => dataset.profits[dayIndex]),
-            ];
-
-            if (this.pieChartInstance) {
-                this.pieChartInstance.data.labels = labels;
-                this.pieChartInstance.data.datasets[0].data = data;
-                this.pieChartInstance.options.plugins.title.text = `${this.yAxisLabel
-                    } för dag ${dayIndex + 1}`;
-
-                this.pieChartInstance.update();
-                return;
-            }
-
             this.pieChartInstance = new Chart(pieChartContext, {
                 type: 'pie',
-                data: {
-                    labels,
-                    datasets: [
-                        {
-                            label: `${this.yAxisLabel}`,
-                            data,
-                            backgroundColor: this.colorScheme,
-                        },
-                    ],
-                },
+                data: pieChartData,
                 options: {
                     responsive: true,
                     plugins: {
                         title: {
                             display: true,
+                            text: `${this.dataUnit} för dag ${dayIndex + 1}`, // Set the title for new instance
                         },
                         tooltip: {
                             callbacks: {
                                 label: (tooltipItem) => {
                                     const datasetLabel = tooltipItem.label;
                                     const price = tooltipItem.raw;
-                                    return `${datasetLabel}: ${price} kr`;
+                                    return `${datasetLabel}: ${price} ${this.dataUnit}`; // Use the correct unit
                                 },
                             },
                         },
@@ -237,118 +154,72 @@
                 },
             });
 
-            pieChartCanvas.addEventListener('click', () => {
-                pieChartCanvas.style.display = 'none';
-            });
+            pieChartCanvas.addEventListener(
+                'contextmenu',
+                function (event) {
+                    event.preventDefault();
+                    pieChartCanvas.parentNode.removeChild(pieChartCanvas);
+                    this.pieChartInstance.destroy();
+                }.bind(this)
+            );
+        }
+
+        randomColorValue = (min = 120, max = 210) => {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        getRandomColors(numberOfColors, alpha = 1) {
+            let colors = [];
+            for (let colorIndex = 0; colorIndex < numberOfColors; colorIndex++) {
+                const randomColor = `rgba(${this.randomColorValue()}, 
+    ${this.randomColorValue()}, 
+    ${this.randomColorValue()},
+    ${alpha})`;
+                colors.push(randomColor);
+            }
+            return colors;
         }
     }
 
-    const costDatasets = [
+    const datasets = [
         {
-            type: 'Mjöl',
-            prices: [
-                25, 24, 26, 27, 24, 30, 28, 25, 27, 29, 26, 25, 24, 23, 26, 27, 28, 29,
-                25, 26, 24, 27, 28, 26, 25, 24, 23, 25, 24, 25,
-            ],
-        },
-        {
-            type: 'Jäst',
-            prices: [
-                10, 11, 10, 12, 10, 11, 9, 10, 12, 11, 10, 9, 8, 10, 11, 12, 11, 10, 9, 8,
-                10, 11, 12, 11, 10, 9, 10, 11, 10, 9,
-            ],
-        },
-        {
-            type: 'Salt',
-            prices: [
-                5, 5, 4, 5, 6, 5, 5, 4, 5, 5, 6, 5, 4, 5, 5, 4, 5, 6, 5, 4, 5, 5, 4, 5, 6,
-                5, 4, 5, 5, 4,
-            ],
-        },
-        {
-            type: 'Vatten använt i bakning',
-            prices: [
-                1, 1, 2, 1, 3, 1, 1, 2, 1, 1, 1, 2, 1, 1, 4, 2, 1, 1, 1, 2, 1, 1, 1, 2, 4,
-                1, 3, 2, 1, 1,
-            ],
-        },
-        {
-            type: 'Socker',
-            prices: [
-                7, 6, 7, 8, 6, 7, 8, 7, 6, 8, 7, 6, 7, 8, 6, 7, 8, 7, 6, 8, 7, 6, 8, 7, 6,
-                7, 8, 6, 7, 8,
-            ],
-        },
-        {
-            type: 'Smör',
-            prices: [
-                18, 19, 20, 18, 17, 18, 19, 20, 18, 19, 20, 21, 19, 18, 20, 19, 18, 20,
-                21, 20, 19, 18, 19, 20, 18, 19, 20, 21, 19, 18,
-            ],
-            type: 'Elektricitet',
-            prices: [
-                30, 31, 29, 30, 32, 30, 31, 29, 30, 31, 29, 30, 32, 30, 29, 31, 30, 29,
-                30, 31, 29, 30, 32, 31, 30, 29, 30, 31, 32, 30,
-            ],
-        },
-        {
-            type: 'Övrigt vatten',
-            prices: [
-                15, 14, 15, 14, 15, 16, 14, 15, 14, 15, 16, 15, 14, 15, 14, 15, 16, 14,
-                15, 14, 15, 16, 15, 14, 15, 16, 15, 14, 15, 14,
-            ],
-        },
-    ];
-
-    const revenueDatasets = [
-        {
-            type: 'Intäkter',
-            profits: [
+            label: 'Dataset A',
+            data: [
                 152, 181, 112, 116, 110, 110, 211, 111, 110, 87, 81, 80, 80, 110, 111,
-                219, 196, 171, 110, 111, 111, 214, 111, 111, 110, 85, 82, 111, 88, 215,
+                219, 196, 3, 110, 111, 111, 214, 111, 111, 110, 85, 82, 111, 88, 215, 152,
+                181, 112, 116, 110, 110, 211, 111, 110, 87, 76, 80, 80, 110, 111, 219, 6,
+                171, 110, 111, 111, 8, 111, 111, 110, 85, 82, 111, 88, 215, 152, 181, 112,
+                116, 110, 110, 211, 111, 110, 87, 81, 80, 80, 110, 111, 219, 196, 171,
+                110, 111, 111, 214, 111, 111, 110, 85, 82, 111, 88, 215, 152, 181, 112,
+                116, 110, 110, 4, 111, 110, 87, 81, 80, 80, 110, 111, 219, 196, 171, 7,
+                111, 111, 214, 6, 111, 110, 85, 82, 111, 88, 215, 152, 181, 112, 116, 110,
+                4, 211, 111, 110, 87, 81, 80, 80, 110, 111, 219, 196, 171, 110, 111, 111,
+                214, 111, 111, 110, 85, 82, 111, 88, 215, 152, 181, 112, 89, 110, 110,
+                211, 111, 6, 87, 81, 80, 80, 110, 111, 219, 196, 171, 1, 111, 111, 214,
+                111, 111, 110, 85, 82, 111, 88, 215,
+            ],
+        },
+        {
+            label: 'Dataset B',
+            data: [
+                30, 530, 29, 30, 32, 30, 31, 29, 30, 31, 29, 30, 32, 30, 29, 31, 30, 29,
+                30, 31, 29, 30, 32, 31, 30, 29, 30, 31, 32, 30, 390, 31, 29, 30, 32, 30,
+                31, 29, 30, 31, 29, 30, 32, 306, 29, 31, 30, 29, 30, 31, 29, 30, 32, 31,
+                30, 29, 310, 31, 32, 530, 30, 31, 259, 30, 32, 30, 31, 29, 30, 31, 29, 30,
+                32, 30, 329, 431, 30, 29, 30, 31, 29, 530, 32, 31, 30, 29, 30, 31, 32, 30,
+                30, 31, 29, 530, 32, 1, 31, 29, 30, 31, 29, 30, 326, 1, 29, 31, 30, 29,
+                30, 530, 29, 530, 342, 31, 30, 29, 30, 31, 32, 30, 301, 31, 29, 30, 32,
+                30, 31, 29, 30, 31, 29, 530, 32, 30, 239, 31, 380, 29, 30, 31, 29, 30, 32,
+                31, 30, 29, 30, 31, 32, 30, 30, 31, 29, 30, 32, 30, 31, 29, 30, 31, 29,
+                30, 32, 30, 269, 31, 530, 530, 30, 31, 29, 30, 32, 31, 30, 29, 320, 31,
+                32, 30,
             ],
         },
     ];
 
-    const chartGenerator = new ChartGenerator(
-        'bread-chart',
-        'line',
-        costDatasets,
-        revenueDatasets
-    );
+    const ctx = document.getElementById('bread-chart').getContext('2d');
 
-    function sumDatasetValues(dataset, key) {
-        const reducedDatasets = dataset.reduce((total, currentDataset) => {
-            if (currentDataset[key]) {
-                return (
-                    total +
-                    currentDataset[key].reduce((accoumulated, value) => {
-                        return accoumulated + value;
-                    }, 0)
-                );
-            }
-            return total;
-        }, 0);
-        return reducedDatasets;
-    }
-
-    const profitMargin = document.createElement('p');
-    const profitMarginPercentage =
-        ((sumDatasetValues(revenueDatasets, 'profits') -
-            sumDatasetValues(costDatasets, 'prices')) /
-            sumDatasetValues(revenueDatasets, 'profits')) *
-        100;
-    profitMargin.innerText = 'Vinstmarginal: ' + profitMarginPercentage + '%';
-
-    if (profitMarginPercentage > 25) {
-        profitMargin.style.color = 'green';
-    } else if (profitMarginPercentage > 20) {
-        profitMargin.style.color = 'yellow';
-    } else {
-        profitMargin.style.color = 'red';
-    }
-    document.body.appendChild(profitMargin);
+    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'kr');
 
     chartGenerator.generateChart();
-
 </script>
