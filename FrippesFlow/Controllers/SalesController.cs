@@ -22,25 +22,18 @@ namespace FrippesFlow.Controllers
             var sales = _context.SalesEntries.ToList();
 
             // Förbered data för Chart.js
-            var weeks = sales.Select(s => s.Week).ToList();  // Hämta veckor som etiketter
-            var amountsSold = sales.Select(s => s.AmountSold).ToList();  // Hämta antal sålda produkter
-            var pricePer = sales.Select(s => s.PricePer).ToList();  // Hämta veckor som etiketter
+            var weeks = sales.Select(s => s.Week).ToList();  
+            var amountsSold = sales.Select(s => s.AmountSold).ToList();  
+            var pricePer = sales.Select(s => s.PricePer).ToList();  
 
 
-            ViewBag.Weeks = JsonConvert.SerializeObject(weeks);  // Skicka veckor som JSON
-            ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);  // Skicka antal sålda som JSON
-            ViewBag.PricePer = JsonConvert.SerializeObject(pricePer);  // Skicka antal sålda som JSON
+            ViewBag.Weeks = JsonConvert.SerializeObject(weeks);  
+            ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);  
+            ViewBag.PricePer = JsonConvert.SerializeObject(pricePer); 
 
 
             return View(sales);
         }
-
-
-        //Read Monthly expense
-
-        //Read Production costs
-
-        //Read IngredientPer10k
 
         //Create sales per week => SalesEntry
         [HttpGet("add")]
