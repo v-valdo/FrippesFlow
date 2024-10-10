@@ -1,6 +1,6 @@
 @model FrippesFlow.Models.SalesEntry;
 <section>
-    <form asp-action="AddEntry">
+     <form asp-controller="SalesController" asp-action="AddEntry" method="post">
         <div>
             <div>
                 <label for="Week">Week</label>
@@ -15,7 +15,7 @@
                 <input asp-for="PricePer" type="text">
             </div>
         </div>
-        <button>Save</button>
+        <button>Submit</button>
     </form>
 
 </section>
