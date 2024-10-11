@@ -1,5 +1,12 @@
 class ChartGenerator {
-	constructor(context, chartType, datasets, dataUnit, xAxisUnit = 'dag') {
+	constructor(
+		context,
+		chartType,
+		datasets,
+		dataUnit,
+		xAxisUnit = 'dag',
+		xLabels
+	) {
 		this.canvas = context;
 		this.chartType = chartType;
 		this.datasets = datasets;
@@ -8,15 +15,16 @@ class ChartGenerator {
 		this.xAxisUnit = xAxisUnit;
 		this.pieChartInstance = null;
 		this.randomColors = this.getRandomColors(datasets[0].data.length);
+		this.xLabels = xLabels;
 	}
 
 	generateChart() {
 		Chart.register(ChartZoom);
 
 		const chartData = {
-			labels: weeks.slice(1),
+			labels: this.xLabels,
 			datasets: this.datasets.map((dataset, index) => ({
-				label: dataset.label,
+				label: 2,
 				data: dataset.data,
 				borderColor: this.randomColors[index],
 				borderWidth: 0.5,
