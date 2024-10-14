@@ -1,18 +1,26 @@
 using FrippesFlow.data;
 using FrippesFlow.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Newtonsoft.Json;
+using System.Linq;
+
 namespace FrippesFlow.Controllers
-{        
+{
     [Route("results")]
     public class ResultsController : Controller
     {
-        [HttpGet("results")]
-        public IActionResult Index()
+        private readonly FrippesFlowContext _context;
+
+        public ResultsController(FrippesFlowContext context)
         {
-            return View();
+            _context = context;
         }
 
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var results = _context.Results.ToList();
+
+            return View(results);
+        }
     }
 }
