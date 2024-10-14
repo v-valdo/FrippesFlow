@@ -22,14 +22,14 @@ namespace FrippesFlow.Controllers
             var sales = _context.SalesEntries.ToList();
 
             // Förbered data för Chart.js
-            var weeks = sales.Select(s => s.Week).ToList();  
-            var amountsSold = sales.Select(s => s.AmountSold).ToList();  
-            var pricePer = sales.Select(s => s.PricePer).ToList();  
+            var weeks = sales.Select(s => s.Week).ToList();
+            var amountsSold = sales.Select(s => s.AmountSold).ToList();
+            var pricePer = sales.Select(s => s.PricePer).ToList();
 
 
-            ViewBag.Weeks = JsonConvert.SerializeObject(weeks);  
-            ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);  
-            ViewBag.PricePer = JsonConvert.SerializeObject(pricePer); 
+            ViewBag.Weeks = JsonConvert.SerializeObject(weeks);
+            ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);
+            ViewBag.PricePer = JsonConvert.SerializeObject(pricePer);
 
 
             return View(sales);
