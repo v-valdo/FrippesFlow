@@ -8,17 +8,20 @@
     };
 </script>
 
+<button onclick="location.href='/sales/add'">Add Weekly Sales</button>
+
 <div>
-    <canvas id="myChart"></canvas>
+    <canvas id="bread-chart"></canvas>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
+    Chart.register(ChartZoom);
+
     // Hämta data från ViewBag (som JSON)
     const weeks = @Html.Raw(ViewBag.Weeks);
     const amountsSold = @Html.Raw(ViewBag.AmountsSold);
     const pricePer = @Html.Raw(ViewBag.PricePer);
+
+    const ctx = document.getElementById('bread-chart');
 
 
     const ctx = document.getElementById('myChart');
@@ -41,13 +44,16 @@
                 borderColor: 'rgba(255, 20, 10, 1)',
                 backgroundColor: 'rgba(255, 20, 10, 0.2)'
             }]
+    const datasets = [
+        {
+            label: 'Amounts sold',
+            data: amountsSold
+        }, {
+            label: 'Price per',
+            data: pricePer
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    ];
+
+    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'bread', "Weeks", weeks);
+    chartGenerator.generateChart(); 
 </script>
