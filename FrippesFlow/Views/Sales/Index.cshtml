@@ -1,5 +1,15 @@
 <h1>Sales Overview</h1>
+
+<button id="addSalesButton" class="float-left submit-button">Add Weekly Sales</button>
+
+<script type="text/javascript">
+    document.getElementById("addSalesButton").onclick = function () {
+        location.href = "http://localhost:5012/sales/add";
+    };
+</script>
+
 <button onclick="location.href='/sales/add'">Add Weekly Sales</button>
+
 <div>
     <canvas id="bread-chart"></canvas>
 </div>
@@ -13,6 +23,27 @@
 
     const ctx = document.getElementById('bread-chart');
 
+
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: weeks, // Använd veckorna som etiketter
+            datasets: [{
+                label: 'Amount Sold',
+                data: amountsSold, // Använd försäljningssiffrorna som data
+                borderWidth: 1,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)'
+            },
+            {
+                label: 'Price per fralla',
+                data: pricePer,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 20, 10, 1)',
+                backgroundColor: 'rgba(255, 20, 10, 0.2)'
+            }]
     const datasets = [
         {
             label: 'Amounts sold',
