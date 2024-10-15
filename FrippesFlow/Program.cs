@@ -7,9 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<FrippesFlowContext>(options =>
  options.UseSqlite(builder.Configuration.GetConnectionString("Sqllite")));
 
+builder.Services.AddScoped<SalesService>();
+builder.Services.AddScoped<ResultService>();
+
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddControllers(); 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
