@@ -20,11 +20,10 @@ namespace FrippesFlow.Controllers
         public async Task<ActionResult> Index()
         {
             var sales = await _salesService.GetSalesEntriesAsync();
-
             // Förbered data för Chart.js
-            var weeks = sales.Select(s => s.Week).ToList();
-            var amountsSold = sales.Select(s => s.AmountSold).ToList();
-            var pricePer = sales.Select(s => s.PricePer).ToList();
+            var weeks = sales.Select(s => s.Week);
+            var amountsSold = sales.Select(s => s.AmountSold);
+            var pricePer = sales.Select(s => s.PricePer);
 
             ViewBag.Weeks = JsonConvert.SerializeObject(weeks);
             ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);

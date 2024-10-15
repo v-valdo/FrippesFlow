@@ -15,37 +15,16 @@
 
     const ctx = document.getElementById('bread-chart');
 
-
-    const ctx = document.getElementById('myChart');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: weeks, // Använd veckorna som etiketter
-            datasets: [{
-                label: 'Amount Sold',
-                data: amountsSold, // Använd försäljningssiffrorna som data
-                borderWidth: 1,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)'
-            },
-            {
-                label: 'Price per fralla',
-                data: pricePer,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 20, 10, 1)',
-                backgroundColor: 'rgba(255, 20, 10, 0.2)'
-            }]
     const datasets = [
-                {
-                    label: 'Amounts sold',
-                    data: amountsSold
-                }, {
-                    label: 'Price per',
-                    data: pricePer
-                },
-            ];
+        {
+            label: 'Amounts sold',
+            data: amountsSold
+        }, {
+            label: 'Price per',
+            data: pricePer
+        },
+    ];
 
-            const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'bread', "Weeks", weeks);
-            chartGenerator.generateChart(); 
+    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'bread', "Weeks", weeks);
+    chartGenerator.generateChart(); 
 </script>

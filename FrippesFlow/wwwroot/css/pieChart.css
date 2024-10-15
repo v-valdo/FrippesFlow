@@ -1,11 +1,13 @@
 :root {
-	--pie-chart-size: 500px;
+  --frippe-chart-size: 500px;
 }
 
-#pie-chart {
-	width: var(--pie-chart-size);
-	height: var(--pie-chart-size);
-	max-width: var(--pie-chart-size);
-	max-height: var(--pie-chart-size);
-	display: block;
+#result-chart,
+#pie-chart,
+#bread-chart {
+  width: var(--frippe-chart-size);
+  height: var(--frippe-chart-size);
+  max-width: var(--frippe-chart-size);
+  max-height: var(--frippe-chart-size);
+  display: block;
 }
