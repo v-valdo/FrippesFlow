@@ -1,14 +1,6 @@
 <h1>Sales Overview</h1>
 
-<button id="addSalesButton" class="float-left submit-button">Add Weekly Sales</button>
-
-<script type="text/javascript">
-    document.getElementById("addSalesButton").onclick = function () {
-        location.href = "http://localhost:5012/sales/add";
-    };
-</script>
-
-<button onclick="location.href='/sales/add'">Add Weekly Sales</button>
+<a class="" asp-area="" asp-controller="sales" asp-action="AddEntry">Add Weekly Sales</a>
 
 <div>
     <canvas id="bread-chart"></canvas>
@@ -45,15 +37,15 @@
                 backgroundColor: 'rgba(255, 20, 10, 0.2)'
             }]
     const datasets = [
-        {
-            label: 'Amounts sold',
-            data: amountsSold
-        }, {
-            label: 'Price per',
-            data: pricePer
-        },
-    ];
+                {
+                    label: 'Amounts sold',
+                    data: amountsSold
+                }, {
+                    label: 'Price per',
+                    data: pricePer
+                },
+            ];
 
-    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'bread', "Weeks", weeks);
-    chartGenerator.generateChart(); 
+            const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'bread', "Weeks", weeks);
+            chartGenerator.generateChart(); 
 </script>

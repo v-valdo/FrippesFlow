@@ -29,10 +29,7 @@ public class ResultService
 
         decimal totalIngredientCost = milkCost + flourCost + yeastCost + butterCost + saltCost + waterCost;
 
-        decimal personalCostTotal = (decimal)monthly.Salary / 4 * entry.AmountSold;
-        decimal electricityCostTotal = (decimal)monthly.Electricity / 4 * entry.AmountSold;
-
-        decimal productionCost = totalIngredientCost + personalCostTotal + electricityCostTotal + (decimal)weeklyExpenses;
+        decimal productionCost = totalIngredientCost + (decimal)weeklyExpenses;
         decimal totalIncome = entry.AmountSold * (decimal)entry.PricePer;
 
         var result = new Result
