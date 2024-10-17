@@ -1,8 +1,36 @@
-﻿@{
+﻿@model IEnumerable<FrippesFlow.Models.Result>
+
+@{
     ViewData["Title"] = "Results";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Kolla vinsten!</h1>
-    <p></a>.</p>
+<div>
+    <canvas id="result-chart"></canvas>
 </div>
+<script>
+    Chart.register(ChartZoom);
+
+    // Hämta data från ViewBag (som JSON)
+    const week = @Html.Raw(ViewBag.Weeks);
+    const prodCost = @Html.Raw(ViewBag.ProdCost);
+    const totIncome = @Html.Raw(ViewBag.TotIncome);
+    const margin = totIncome.map((income, index) => income - prodCost[index]);
+    const ctx = document.getElementById('result-chart');
+
+    const datasets = [
+        {
+            label: 'Production Cost',
+            data: prodCost
+        }, {
+            label: 'Total Income',
+            data: totIncome
+        },
+        {
+            label: 'Margin',
+            data: margin
+        }
+    ];
+
+    const chartGenerator = new ChartGenerator(ctx, 'pie', datasets, 'SEK', "Weeks", week, false);
+    chartGenerator.generateChart(); 
+</script>
