@@ -30,13 +30,37 @@ class ChartGenerator {
 				data: dataset.data,
 				borderColor: this.randomColors[index],
 				borderWidth: 0.5,
-				pointRadius: 1,
+				pointRadius: 2,
 				pointHoverRadius: 3,
-				lineTension: 0.0001,
 				backgroundColor: this.randomColors[index],
 				fill: false,
 			})),
 		};
+
+		let scales = {};
+		if (this.chartType !== 'pie') {
+			scales = {
+				x: {
+					beginAtZero: true,
+					title: {
+						display: true,
+						text: this.xAxisUnit,
+					},
+					ticks: {
+						autoSkip: false,
+						minRotation: 25,
+						maxRotation: 45,
+					},
+				},
+				y: {
+					beginAtZero: true,
+					title: {
+						display: true,
+						text: this.dataUnit,
+					},
+				},
+			};
+		}
 
 		this.chartInstance = new Chart(this.canvas.getContext('2d'), {
 			type: this.chartType,
@@ -55,27 +79,7 @@ class ChartGenerator {
 						},
 					},
 				},
-				scales: {
-					x: {
-						beginAtZero: true,
-						title: {
-							display: true,
-							text: this.xAxisUnit,
-						},
-						ticks: {
-							autoSkip: false,
-							minRotation: 25,
-							maxRotation: 45,
-						},
-					},
-					y: {
-						beginAtZero: true,
-						title: {
-							display: true,
-							text: this.dataUnit,
-						},
-					},
-				},
+				scales: scales,
 			},
 		});
 
