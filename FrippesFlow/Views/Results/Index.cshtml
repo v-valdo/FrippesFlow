@@ -15,7 +15,6 @@
     const prodCost = @Html.Raw(ViewBag.ProdCost);
     const totIncome = @Html.Raw(ViewBag.TotIncome);
     const margin = totIncome.map((income, index) => income - prodCost[index]);
-
     const ctx = document.getElementById('result-chart');
 
     const datasets = [
@@ -32,6 +31,6 @@
         }
     ];
 
-    const chartGenerator = new ChartGenerator(ctx, 'pie', datasets, 'SEK', "Weeks", week);
+    const chartGenerator = new ChartGenerator(ctx, 'pie', datasets, 'SEK', "Weeks", week, false);
     chartGenerator.generateChart(); 
 </script>
