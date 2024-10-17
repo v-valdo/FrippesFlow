@@ -24,7 +24,7 @@ class ChartGenerator {
     const chartData = {
       labels: this.xLabels,
       datasets: this.datasets.map((dataset, index) => ({
-        label: this.dataset.label,
+        label: dataset.label,
         data: dataset.data,
         borderColor: this.randomColors[index],
         borderWidth: 0.5,
