@@ -5,7 +5,7 @@
 }
 
 
-<h1>Results Overview</h1>
+<h1>Results</h1>
 <div class="chart-container"> 
 
 <div>
@@ -36,7 +36,7 @@
         }
     ];
 
-    const chartGeneratorResults = new ChartGenerator(ctx, 'line', datasets, 'SEK', "Weeks", week, "Weeks");
+    const chartGeneratorResults = new ChartGenerator(ctx, 'line', datasets, 'SEK', "Week", week, "week");
     chartGeneratorResults.generateChart(); 
 </script>
 </div>

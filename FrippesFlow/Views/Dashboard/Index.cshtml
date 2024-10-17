@@ -1,8 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
+    <h1>Dashboard</h1>
 
+<div class="chart-container">
 <div class="text-center">
-    <h1 class="display-4">DashBoard</h1>
-    <p>Check your stats.</a></p>
+
+    <div>
+    <canvas id="bread-chart"></canvas>
+</div>
+
+<script>
+    Chart.register(ChartZoom);
+
+    // Hämta data från ViewBag (som JSON)
+    const weeks = @Html.Raw(ViewBag.Weeks);
+    const amountsSold = @Html.Raw(ViewBag.AmountsSold);
+    const pricePer = @Html.Raw(ViewBag.PricePer);
+
+    const ctx = document.getElementById('bread-chart');
+
+    const datasets = [
+        {
+            label: 'Amounts sold',
+            data: amountsSold
+        }, {
+            label: 'Price per',
+            data: pricePer
+        },
+    ];
+
+    const chartGeneratorSales = new ChartGenerator(ctx, 'line', datasets, '', "Week", weeks);
+    chartGeneratorSales.generateChart(); 
+
+</script>
+
+</div>
 </div>

@@ -27,8 +27,8 @@ class ChartGenerator {
         label: dataset.label,
         data: dataset.data,
         borderColor: this.randomColors[index],
-        borderWidth: 0.5,
-        pointRadius: 1,
+        borderWidth: 1,
+        pointRadius: 5,
         pointHoverRadius: 3,
         lineTension: 0.0001,
         backgroundColor: this.randomColors[index],
@@ -135,7 +135,8 @@ class ChartGenerator {
         plugins: {
           title: {
             display: true,
-            text: `${this.dataUnit} week ${dayIndex + 1}`,
+            text: `${this.dataUnit} ${this.xAxisUnit} ${this.xLabels[dayIndex]}`, 
+            
           },
           tooltip: {
             callbacks: {
