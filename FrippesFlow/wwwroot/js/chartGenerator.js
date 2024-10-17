@@ -4,7 +4,7 @@ class ChartGenerator {
     chartType,
     datasets,
     dataUnit,
-    xAxisUnit = "dag",
+    xAxisUnit = "Week",
     xLabels
   ) {
     this.canvas = context;
@@ -27,8 +27,8 @@ class ChartGenerator {
         label: dataset.label,
         data: dataset.data,
         borderColor: this.randomColors[index],
-        borderWidth: 0.5,
-        pointRadius: 1,
+        borderWidth: 1,
+        pointRadius: 5,
         pointHoverRadius: 3,
         lineTension: 0.0001,
         backgroundColor: this.randomColors[index],
@@ -99,7 +99,8 @@ class ChartGenerator {
 
           const pieChartCanvas = document.createElement("canvas");
           pieChartCanvas.id = pieChartId;
-          document.body.appendChild(pieChartCanvas);
+          const chartcontainer = document.querySelector(".chart-container")
+          chartcontainer.appendChild(pieChartCanvas);
 
           const clickedIndex = activePoints[0].index;
           this.updatePieChart(clickedIndex, pieChartCanvas);
@@ -134,7 +135,8 @@ class ChartGenerator {
         plugins: {
           title: {
             display: true,
-            text: `${this.dataUnit} för dag ${dayIndex + 1}`,
+            text: `${this.dataUnit} ${this.xAxisUnit} ${this.xLabels[dayIndex]}`, 
+            
           },
           tooltip: {
             callbacks: {

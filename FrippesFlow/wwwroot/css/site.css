@@ -3,6 +3,22 @@ a {
   text-decoration: none;
 }
 
+h1 {
+  display: flex;
+  justify-content: center;
+}
+
+p{
+  display: flex;
+  justify-content: center;
+}
+
+.add-entry-button{
+    display: flex;
+    justify-content: center;
+
+  }
+
 .head-container{
   display: flex;
   flex-direction: row;

@@ -4,6 +4,10 @@
     ViewData["Title"] = "Results";
 }
 
+
+<h1>Results</h1>
+<div class="chart-container"> 
+
 <div>
     <canvas id="result-chart"></canvas>
 </div>
@@ -32,6 +36,7 @@
         }
     ];
 
-    const chartGenerator = new ChartGenerator(ctx, 'pie', datasets, 'SEK', "Weeks", week);
-    chartGenerator.generateChart(); 
+    const chartGeneratorResults = new ChartGenerator(ctx, 'line', datasets, 'SEK', "Week", week, "week");
+    chartGeneratorResults.generateChart(); 
 </script>
+</div>
