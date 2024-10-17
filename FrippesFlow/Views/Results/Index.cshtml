@@ -4,13 +4,14 @@
     ViewData["Title"] = "Results";
 }
 
-
 <h1>Results</h1>
-<div class="chart-container"> 
 
-<div>
-    <canvas id="result-chart"></canvas>
+<div class="chart-container">
+    <div>
+        <canvas id="result-chart"></canvas>
+    </div>
 </div>
+
 <script>
     Chart.register(ChartZoom);
 
@@ -37,6 +38,5 @@
     ];
 
     const chartGeneratorResults = new ChartGenerator(ctx, 'line', datasets, 'SEK', "Week", week, "week");
-    chartGeneratorResults.generateChart(); 
+    chartGeneratorResults.generateChart();
 </script>
-</div>

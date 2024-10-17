@@ -99,8 +99,9 @@ class ChartGenerator {
 
           const pieChartCanvas = document.createElement("canvas");
           pieChartCanvas.id = pieChartId;
-          const chartcontainer = document.querySelector(".chart-container")
-          chartcontainer.appendChild(pieChartCanvas);
+          const chartContainer = document.querySelector(".chart-container");
+
+          chartContainer.appendChild(pieChartCanvas);
 
           const clickedIndex = activePoints[0].index;
           this.updatePieChart(clickedIndex, pieChartCanvas);
@@ -135,8 +136,7 @@ class ChartGenerator {
         plugins: {
           title: {
             display: true,
-            text: `${this.dataUnit} ${this.xAxisUnit} ${this.xLabels[dayIndex]}`, 
-            
+            text: `${this.dataUnit} ${this.xAxisUnit} ${this.xLabels[dayIndex]}`,
           },
           tooltip: {
             callbacks: {

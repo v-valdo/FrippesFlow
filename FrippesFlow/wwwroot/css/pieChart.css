@@ -5,10 +5,14 @@
 .chart-container {
   display: flex;
   justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 #result-chart,
-#pie-chart,
 #bread-chart {
   width: var(--frippe-chart-size);
   height: var(--frippe-chart-size);
@@ -16,3 +20,7 @@
   max-height: var(--frippe-chart-size);
 }
 
+#pie-chart {
+  width: 100% !important;
+  height: 400px !important;
+}

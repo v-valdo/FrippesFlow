@@ -18,27 +18,28 @@
 <body>
     <header>
         <div class="head-container">
-                <a class="header-title" asp-area="" asp-controller="Home" asp-action="Index">FRIPPES FLOW</a>
-                <div class="navbar-brand">
-
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="dashboard" asp-action="Index">Dashboard</a>
-                        </li>
+            <a class="header-title" asp-area="" asp-controller="Home" asp-action="Index">FRIPPES FLOW</a>
+            <nav class="navbar-brand">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="dashboard" asp-action="Index">Dashboard</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="sales" asp-action="AddEntry">AddEntry</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="sales" asp-action="Index">Sales</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="results" asp-action="Index">Results</a>
                     </li>
-                </div>
-</div>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="sales" asp-action="Index">Sales</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="results" asp-action="Index">Results</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
         <img src="~/images/frallor_backg.png" alt="Frallor" class="img-banner" />
     </header>
+
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -46,15 +47,16 @@
 
 
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - FrippesFlow -
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2024 - FrippesFlow -
+            </div>
+        </footer>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @await RenderSectionAsync("Scripts", required: false)
 </body>
 </div>
+
 </html>
