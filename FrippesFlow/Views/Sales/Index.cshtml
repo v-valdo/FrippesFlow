@@ -1,6 +1,9 @@
 <h1>Sales Overview</h1>
+<button>
 
 <a class="" asp-area="" asp-controller="sales" asp-action="AddEntry">Add Weekly Sales</a>
+</button>
+<div class="chart-container">
 
 <div>
     <canvas id="bread-chart"></canvas>
@@ -25,6 +28,7 @@
         },
     ];
 
-    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'bread', "Weeks", weeks);
+    const chartGenerator = new ChartGenerator(ctx, 'line', datasets, 'Sold Frallor', "Weeks", weeks);
     chartGenerator.generateChart(); 
 </script>
+</div>

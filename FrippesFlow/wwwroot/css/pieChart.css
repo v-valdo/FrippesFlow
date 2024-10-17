@@ -2,6 +2,11 @@
   --frippe-chart-size: 500px;
 }
 
+.chart-container {
+  display: flex;
+  justify-content: center;
+}
+
 #result-chart,
 #pie-chart,
 #bread-chart {
@@ -9,5 +14,5 @@
   height: var(--frippe-chart-size);
   max-width: var(--frippe-chart-size);
   max-height: var(--frippe-chart-size);
-  display: block;
 }
+
