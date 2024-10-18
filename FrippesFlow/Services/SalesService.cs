@@ -1,25 +1,21 @@
-using FrippesFlow.data;
 using FrippesFlow.Models;
-using Microsoft.EntityFrameworkCore;
 
 public class SalesService
 {
-    private readonly FrippesFlowContext _context;
+    private readonly ISalesRepository _salesRepository;
     private readonly ResultService _resultService;
-    public SalesService(FrippesFlowContext context, ResultService resultService)
+    public SalesService(ISalesRepository salesRepository, ResultService resultService)
     {
-        _context = context;
+        _salesRepository = salesRepository;
         _resultService = resultService;
     }
     public async Task<List<SalesEntry>> GetSalesEntriesAsync()
     {
-        return await _context.SalesEntries.ToListAsync();
+        return await _salesRepository.GetAllAsync();
     }
     public async Task AddEntryAsync(SalesEntry entry)
     {
-        await _context.AddAsync(entry);
-        await _context.SaveChangesAsync();
+        await _salesRepository.AddAsync(entry);
         await _resultService.AddResultAsync(entry);
     }
-
 }

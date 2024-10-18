@@ -1,47 +1,41 @@
-using FrippesFlow.data;
 using FrippesFlow.Models;
+using FrippesFlow.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-namespace FrippesFlow.Controllers
+
+namespace FrippesFlow.Controllers;
+[Route("sales")]
+public class SalesController : Controller
 {
-
-    [Route("sales")]
-    public class SalesController : Controller
+    private readonly SalesService _salesService;
+    public SalesController(SalesService salesService)
     {
-        private readonly SalesService _salesService;
-        public SalesController(SalesService salesService)
-        {
-            _salesService = salesService;
-        }
+        _salesService = salesService;
+    }
 
-        //Read Result
-        [HttpGet]
-        public async Task<ActionResult> Index()
+    //Read Result
+    [HttpGet]
+    public async Task<ActionResult> Index()
+    {
+        var sales = await _salesService.GetSalesEntriesAsync();
+        var viewModel = new SalesChartViewModel
         {
-            var sales = await _salesService.GetSalesEntriesAsync();
-            // Förbered data för Chart.js
-            var weeks = sales.Select(s => s.Week);
-            var amountsSold = sales.Select(s => s.AmountSold);
-            var pricePer = sales.Select(s => s.PricePer);
+            Weeks = JsonConvert.SerializeObject(sales.Select(s => s.Week)),
+            AmountsSold = JsonConvert.SerializeObject(sales.Select(s => s.AmountSold)),
+            PricePer = JsonConvert.SerializeObject(sales.Select(s => s.PricePer))
+        };
+        return View(viewModel);
+    }
 
-            ViewBag.Weeks = JsonConvert.SerializeObject(weeks);
-            ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);
-            ViewBag.PricePer = JsonConvert.SerializeObject(pricePer);
-
-            return View(sales);
-        }
-
-        [HttpGet("add")]
-        public ActionResult AddEntry()
-        {
-            return View();
-        }
-        [HttpPost("add")]
-        public async Task<ActionResult> AddEntry(SalesEntry entry)
-        {
-            await _salesService.AddEntryAsync(entry);
-            return RedirectToAction("Index");
-        }
+    [HttpGet("add")]
+    public ActionResult AddEntry()
+    {
+        return View();
+    }
+    [HttpPost("add")]
+    public async Task<ActionResult> AddEntry(SalesEntry entry)
+    {
+        await _salesService.AddEntryAsync(entry);
+        return RedirectToAction("Index");
     }
 }

@@ -1,17 +1,19 @@
 using FrippesFlow.data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FrippesFlowContext>(options =>
  options.UseSqlite(builder.Configuration.GetConnectionString("Sqllite")));
 
+builder.Services.AddScoped<CostCalculation>();
 builder.Services.AddScoped<SalesService>();
 builder.Services.AddScoped<ResultService>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<ISalesRepository, SalesRepository>();
+builder.Services.AddScoped<IResultRepository, ResultRepository>();
 
+builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
