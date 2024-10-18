@@ -1,32 +1,32 @@
-
+@model FrippesFlow.ViewModels.SalesChartViewModel;
 
 <h1>Sales</h1>
 <div class="chart-container">
 
-<div>
-    <canvas id="bread-chart"></canvas>
-</div>
-<script>
-    Chart.register(ChartZoom);
+    <div>
+        <canvas id="bread-chart"></canvas>
+    </div>
+    <script>
+        Chart.register(ChartZoom);
 
-    // Hämta data från ViewBag (som JSON)
-    const weeks = @Html.Raw(ViewBag.Weeks);
-    const amountsSold = @Html.Raw(ViewBag.AmountsSold);
-    const pricePer = @Html.Raw(ViewBag.PricePer);
+        // Hämta data från ViewBag (som JSON)
+        const weeks = @Html.Raw(Model.Weeks);
+        const amountsSold = @Html.Raw(Model.AmountsSold);
+        const pricePer = @Html.Raw(Model.PricePer);
 
-    const ctx = document.getElementById('bread-chart');
+        const ctx = document.getElementById('bread-chart');
 
-    const datasets = [
-        {
-            label: 'Amounts sold',
-            data: amountsSold
-        }, {
-            label: 'Price per',
-            data: pricePer
-        },
-    ];
+        const datasets = [
+            {
+                label: 'Amounts sold',
+                data: amountsSold
+            }, {
+                label: 'Price per',
+                data: pricePer
+            },
+        ];
 
-    const chartGeneratorSales = new ChartGenerator(ctx, 'line', datasets, '', "Week", weeks);
-    chartGeneratorSales.generateChart(); 
-</script>
+        const chartGeneratorSales = new ChartGenerator(ctx, 'line', datasets, '', "Week", weeks);
+        chartGeneratorSales.generateChart(); 
+    </script>
 </div>

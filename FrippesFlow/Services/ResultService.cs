@@ -4,32 +4,26 @@ using Microsoft.EntityFrameworkCore;
 
 public class ResultService
 {
-    private readonly FrippesFlowContext _context;
+    private readonly IResultRepository _resultRepository;
+    private readonly CostCalculation _calc;
 
-    public ResultService(FrippesFlowContext context)
+    public ResultService(IResultRepository resultRepository, CostCalculation calc)
     {
-        _context = context;
+        _resultRepository = resultRepository;
+        _calc = calc;
     }
 
     public async Task AddResultAsync(SalesEntry entry)
     {
-        var ingredients = await _context.IngredientsPer10k.FirstOrDefaultAsync();
-        var monthly = await _context.MonthlyExpenses.FirstOrDefaultAsync();
-        var production = await _context.ProductionCosts.FirstOrDefaultAsync();
+        var ingredients = await _resultRepository.GetIngredientsAsync();
+        var monthly = await _resultRepository.GetMonthlyAsync();
+        var production = await _resultRepository.GetProdCostAsync();
 
-        var totalMonthly = monthly.Electricity + monthly.Salary;
-        double weeklyExpenses = totalMonthly / 4;
+        decimal totalIngredientCost = _calc.IngredientCost(entry, ingredients, production);
+        decimal weeklyExpenses = (decimal)((monthly.Electricity + monthly.Salary) / 4);
 
-        decimal milkCost = entry.AmountSold / 10000m * (decimal)ingredients.Milk * (decimal)production.MilkPerLitre;
-        decimal flourCost = entry.AmountSold / 10000m * (decimal)ingredients.Flour * (decimal)production.FlourPerKg;
-        decimal yeastCost = entry.AmountSold / 10000m * (decimal)ingredients.Yeast * (decimal)production.YeastPerKg;
-        decimal butterCost = entry.AmountSold / 10000m * (decimal)ingredients.Butter * (decimal)production.ButterPerKg;
-        decimal saltCost = entry.AmountSold / 10000m * (decimal)ingredients.Salt * (decimal)production.SaltPerKg;
-        decimal waterCost = entry.AmountSold / 10000m * (decimal)ingredients.Water * (decimal)production.WaterPerM3;
+        decimal productionCost = totalIngredientCost + weeklyExpenses;
 
-        decimal totalIngredientCost = milkCost + flourCost + yeastCost + butterCost + saltCost + waterCost;
-
-        decimal productionCost = totalIngredientCost + (decimal)weeklyExpenses;
         decimal totalIncome = entry.AmountSold * (decimal)entry.PricePer;
 
         var result = new Result
@@ -39,13 +33,11 @@ public class ResultService
             TotalIncome = (double)totalIncome
         };
 
-        var existingResult = await _context.Results
-            .FirstOrDefaultAsync(r => r.Date == entry.Week);
+        var existingResult = await _resultRepository.GetAllResultsAsync();
 
         if (existingResult == null)
         {
-            _context.Results.Add(result);
-            await _context.SaveChangesAsync();
+            await _resultRepository.AddResultAsync(result);
         }
     }
 }
