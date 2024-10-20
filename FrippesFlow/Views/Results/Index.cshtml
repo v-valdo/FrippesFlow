@@ -6,6 +6,7 @@
 
 <h1>Results</h1>
 
+
 <div class="chart-container">
     <div>
         <canvas id="result-chart"></canvas>
@@ -15,7 +16,6 @@
 <script>
     Chart.register(ChartZoom);
 
-    // Hämta data från ViewBag (som JSON)
     const week = @Html.Raw(ViewBag.Weeks);
     const prodCost = @Html.Raw(ViewBag.ProdCost);
     const totIncome = @Html.Raw(ViewBag.TotIncome);

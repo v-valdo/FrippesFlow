@@ -1,27 +1,27 @@
 using FrippesFlow.data;
 using FrippesFlow.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 
 namespace FrippesFlow.Controllers
-{     
-    
+{
     [Route("dashboard")]
     public class DashboardController : Controller
     {
-                private readonly SalesService _salesService;
-        public DashboardController(SalesService salesService)
+        private readonly SalesService _salesService;
+        private readonly FrippesFlowContext _context;
+
+        public DashboardController(SalesService salesService, FrippesFlowContext context)
         {
             _salesService = salesService;
-
+            _context = context;
         }
-            
-            [HttpGet]
+
+        [HttpGet]
         public async Task<ActionResult> Index()
         {
+
             var sales = await _salesService.GetSalesEntriesAsync();
-            // Förbered data för Chart.js
             var weeks = sales.Select(s => s.Week);
             var amountsSold = sales.Select(s => s.AmountSold);
             var pricePer = sales.Select(s => s.PricePer);
@@ -30,9 +30,14 @@ namespace FrippesFlow.Controllers
             ViewBag.AmountsSold = JsonConvert.SerializeObject(amountsSold);
             ViewBag.PricePer = JsonConvert.SerializeObject(pricePer);
 
-            return View(sales);
-        }
+            var results = _context.Results.ToList();
+            var prodCost = results.Select(r => r.ProductionCost);
+            var totIncome = results.Select(r => r.TotalIncome);
 
-            }
+            ViewBag.ProdCost = JsonConvert.SerializeObject(prodCost);
+            ViewBag.TotIncome = JsonConvert.SerializeObject(totIncome);
+
+            return View();
         }
-    
+    }
+}
