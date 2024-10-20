@@ -1,37 +1,32 @@
 using FrippesFlow.data;
-using FrippesFlow.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Linq;
+using FrippesFlow.ViewModels;
 
-namespace FrippesFlow.Controllers
+
+namespace FrippesFlow.Controllers;
+[Route("results")]
+public class ResultsController : Controller
 {
-    [Route("results")]
-    public class ResultsController : Controller
+    private readonly IResultRepository _resultRepository;
+
+    public ResultsController(IResultRepository resultRepository)
     {
-        private readonly FrippesFlowContext _context;
+        _resultRepository = resultRepository;
+    }
 
-        public ResultsController(FrippesFlowContext context)
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var results = await _resultRepository.GetAllResultsAsync();
+
+        var viewModel = new ResultChartViewModel
         {
-            _context = context;
-        }
+            Week = JsonConvert.SerializeObject(results.Select(s => s.Date)),
+            ProdCost = JsonConvert.SerializeObject(results.Select(s => s.ProductionCost)),
+            TotIncome = JsonConvert.SerializeObject(results.Select(s => s.TotalIncome))
+        };
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            var results = _context.Results.ToList();
-
-            // Förbered data för Chart.js
-            var week = results.Select(r => r.Date);
-            var prodCost = results.Select(r => r.ProductionCost);
-            var totIncome = results.Select(r => r.TotalIncome);
-
-            ViewBag.Weeks = JsonConvert.SerializeObject(week);
-            ViewBag.ProdCost = JsonConvert.SerializeObject(prodCost);
-            ViewBag.TotIncome = JsonConvert.SerializeObject(totIncome);
-
-            return View(results);
-        }
-
+        return View(viewModel);
     }
 }
