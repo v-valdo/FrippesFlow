@@ -24,8 +24,8 @@ public class SalesController : Controller
             AmountsSold = JsonConvert.SerializeObject(sales.Select(s => s.AmountSold)),
             PricePer = JsonConvert.SerializeObject(sales.Select(s => s.PricePer))
         };
-        return View(viewModel);
-    }
+        return View(viewModel);    
+        }
 
     [HttpGet("add")]
     public ActionResult AddEntry()
