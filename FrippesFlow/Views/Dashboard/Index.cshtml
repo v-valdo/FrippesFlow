@@ -1,39 +1,63 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "Dashboard";
 }
-    <h1>Dashboard</h1>
+
+<h1>Dashboard</h1>
 
 <div class="chart-container">
-<div class="text-center">
+    <div class="text-center">
+        <div>
+            <canvas id="bread-chart"></canvas>
+        </div>
 
-    <div>
-    <canvas id="bread-chart"></canvas>
+        <div>
+            <canvas id="result-chart"></canvas>
+        </div>
+    </div>
 </div>
 
 <script>
     Chart.register(ChartZoom);
 
-    // Hämta data från ViewBag (som JSON)
-    const weeks = @Html.Raw(ViewBag.Weeks);
-    const amountsSold = @Html.Raw(ViewBag.AmountsSold);
-    const pricePer = @Html.Raw(ViewBag.PricePer);
+    const weeks = @Html.Raw(ViewBag.SalesChart.Weeks);
+    const amountsSold = @Html.Raw(ViewBag.SalesChart.AmountsSold);
+    const pricePer = @Html.Raw(ViewBag.SalesChart.PricePer);
 
-    const ctx = document.getElementById('bread-chart');
-
-    const datasets = [
+    const breadCtx = document.getElementById('bread-chart');
+    const breadDatasets = [
         {
             label: 'Amounts sold',
             data: amountsSold
-        }, {
+        },
+        {
             label: 'Price per',
             data: pricePer
         },
     ];
 
-    const chartGeneratorSales = new ChartGenerator(ctx, 'line', datasets, '', "Week", weeks);
-    chartGeneratorSales.generateChart(); 
+    const chartGeneratorSales = new ChartGenerator(breadCtx, 'line', breadDatasets, '', "Week", weeks);
+    chartGeneratorSales.generateChart();
 
+    const prodCost = @Html.Raw(ViewBag.ResultChart.ProdCost);
+    const totIncome = @Html.Raw(ViewBag.ResultChart.TotIncome);
+    const margin = totIncome.map((income, index) => income - prodCost[index]);
+
+    const resultCtx = document.getElementById('result-chart');
+    const resultDatasets = [
+        {
+            label: 'Production Cost',
+            data: prodCost
+        },
+        {
+            label: 'Total Income',
+            data: totIncome
+        },
+        {
+            label: 'Margin',
+            data: margin
+        }
+    ];
+
+    const chartGeneratorResults = new ChartGenerator(resultCtx, 'line', resultDatasets, 'SEK', "Week", weeks);
+    chartGeneratorResults.generateChart();
 </script>
-
-</div>
-</div>
