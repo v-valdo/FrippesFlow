@@ -1,5 +1,10 @@
 @model FrippesFlow.Models.SalesEntry;
-<section>
+@{
+    ViewData["Title"] = "Add Weekly Entry";
+}
+
+<h1>Add New Weekly Entry</h1>
+<section class="entry-form">
     <form asp-controller="Sales" asp-action="AddEntry" method="post">
         <div>
             <div>

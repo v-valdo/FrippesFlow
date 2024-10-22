@@ -35,7 +35,7 @@ public class ResultService
 
         var existingResult = await _resultRepository.GetAllResultsAsync();
 
-        if (existingResult == null)
+        if (existingResult != null)
         {
             await _resultRepository.AddResultAsync(result);
         }

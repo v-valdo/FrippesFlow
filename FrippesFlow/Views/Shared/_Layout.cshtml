@@ -18,20 +18,21 @@
 <body>
     <header>
         <div class="head-container">
-            <a class="header-title" asp-area="" asp-controller="Home" asp-action="Index">FRIPPES FLOW</a>
+            <a class="header-title" asp-area="" asp-controller="Home" asp-action="Index"><img
+                    src="~/images/frippe-logo.png" alt="frippes logga"></a>
             <nav class="navbar-brand">
                 <ul class="nav-list">
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="dashboard" asp-action="Index">Dashboard</a>
+                        <a class="nav-link" asp-area="" asp-controller="dashboard" asp-action="Index">DASHBOARD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="sales" asp-action="AddEntry">AddEntry</a>
+                        <a class="nav-link" asp-area="" asp-controller="sales" asp-action="AddEntry">NEW ENTRY</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="sales" asp-action="Index">Sales</a>
+                        <a class="nav-link" asp-area="" asp-controller="sales" asp-action="Index">SALES</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="results" asp-action="Index">Results</a>
+                        <a class="nav-link" asp-area="" asp-controller="results" asp-action="Index">RESULTS</a>
                     </li>
                 </ul>
             </nav>
@@ -45,9 +46,9 @@
             @RenderBody()
         </main>
 
-        <footer class="border-top footer text-muted">
+        <footer class="frippefooter">
             <div class="container">
-                &copy; 2024 - FrippesFlow -
+                &copy; 2024 - FrippesFlow
             </div>
         </footer>
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
